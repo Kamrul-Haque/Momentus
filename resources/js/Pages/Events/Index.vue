@@ -51,7 +51,6 @@ async function updateData() {
     });
 }
 
-// Method to handle sorting
 function sort(sortBy) {
     if (params.sortBy === sortBy) {
         params.sortDesc = !params.sortDesc;
@@ -98,23 +97,47 @@ function sort(sortBy) {
              :key="index"
              class="card mb-4">
             <div class="card-body">
-                <div class="flex justify-between">
-                    <div class="text-lg">{{ event.title }}</div>
+                <div class="flex justify-between mb-2">
+                    <Link :href="route('events.show', event.reminder_id)"
+                          as="div"
+                          class="text-lg hover:underline hover:text-primary hover:cursor-pointer"
+                          title="title">
+                        {{ event.title }}
+                    </Link>
                     <div>
-                        <div :class="[event.status_name === 'upcoming' ? 'bg-blue-50 text-primary' : 'bg-green-100 text-success']"
-                             class="rounded-full px-4 py-2 text-sm">
+                        <div v-if="event.deleted_at"
+                             class="rounded-full px-4 py-1 text-sm bg-gray-200 text-gray-600 text-center capitalize"
+                             title="status">
+                            archived
+                        </div>
+                        <div v-else
+                             :class="[event.status_name === 'upcoming' ? 'bg-blue-50 text-primary' : 'bg-green-100 text-success']"
+                             class="rounded-full px-4 py-1 text-sm text-center capitalize"
+                             title="status">
                             {{ event.status_name }}
                         </div>
                     </div>
                 </div>
-                <div class="flex text-sm text-gray-500">
-                    <div class="flex">
+                <div class="flex gap-2 text-sm text-gray-500 flex-wrap">
+                    <div class="flex gap-1"
+                         title="start time">
                         <i class="mdi mdi-clock"></i>
-                        <div class="ml-1">{{ event.start_at.time }}</div>
+                        <p>{{ event.start_at.time }}</p>
                     </div>
-                    <div class="flex ml-2">
+                    <div class="flex gap-1"
+                         title="start date">
                         <i class="mdi mdi-calendar-blank"></i>
-                        <div class="ml-1">{{ event.start_at.date }}</div>
+                        <p>{{ event.start_at.date }}</p>
+                    </div>
+                    <div class="flex gap-1"
+                         title="created by">
+                        <i class="mdi mdi-account"></i>
+                        <p>{{ event.created_by_name }}</p>
+                    </div>
+                    <div class="flex gap-1"
+                         title="attendees">
+                        <i class="mdi mdi-account-multiple"></i>
+                        <p>{{ event.users.length }} Person</p>
                     </div>
                 </div>
             </div>

@@ -1,11 +1,11 @@
 <script setup>
-import Admin from "@/Layouts/Admin.vue";
 import {Head} from "@inertiajs/vue3";
 import TextField from "@/Components/TextField.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextArea from "@/Components/TextArea.vue";
 import {useForm} from 'laravel-precognition-vue-inertia';
 import MultiSelect from "@/Components/MultiSelect.vue";
+import Auth from "@/Layouts/Auth.vue";
 
 const props = defineProps({
     event: Object,
@@ -13,14 +13,15 @@ const props = defineProps({
     selected_users: Array
 });
 
-const form = useForm('post', props.event ? route('events.update', props.event.id) : route('events.store'), {
+const form = useForm('post', props.event ? route('events.update', props.event.reminder_id) : route('events.store'), {
+    _method: props.event ? 'PUT' : 'POST',
     title: props.event ? props.event.title : null,
-    start_time: props.event ? props.event.start_time : null,
-    start_date: props.event ? props.event.start_date : null,
-    end_time: props.event ? props.event.end_time : null,
-    end_date: props.event ? props.event.end_date : null,
+    start_time: props.event ? props.event.start_at.raw_time : null,
+    start_date: props.event ? props.event.start_at.raw_date : null,
+    end_time: props.event ? props.event.end_at.raw_time : null,
+    end_date: props.event ? props.event.end_at.raw_date : null,
     description: props.event ? props.event.description : null,
-    users: props.selected_users || null
+    users: props.selected_users || []
 });
 
 function submit() {
@@ -31,7 +32,7 @@ function submit() {
 <template>
     <Head title="Settings"/>
 
-    <Admin>
+    <Auth>
         <div class="card w-full md:w-3/4 mx-auto">
             <h1 class="card-header">{{ event ? 'Edit User' : 'Create User' }}</h1>
             <div class="card-body">
@@ -42,6 +43,12 @@ function submit() {
                                :error="form.errors.title"
                                autofocus
                                required/>
+
+                    <MultiSelect v-model="form.users"
+                                 :items="users"
+                                 item-label="name"
+                                 item-value="id"
+                                 label="Attendees"/>
 
                     <TextField v-model="form.start_time"
                                type="time"
@@ -74,17 +81,11 @@ function submit() {
                               @change="form.validate('description')"
                               :error="form.errors.description"/>
 
-                    <MultiSelect v-model="form.users"
-                                 :items="users"
-                                 item-label="name"
-                                 item-value="id"
-                                 label="Attendees"/>
-
                     <div class="text-right mt-8">
                         <PrimaryButton type="submit">Save</PrimaryButton>
                     </div>
                 </form>
             </div>
         </div>
-    </Admin>
+    </Auth>
 </template>

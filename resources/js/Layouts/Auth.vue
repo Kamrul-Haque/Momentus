@@ -5,7 +5,7 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import {Link} from '@inertiajs/vue3';
+import {Link, usePage} from '@inertiajs/vue3';
 
 const cssProps = computed(() => {
     return {
@@ -16,6 +16,8 @@ const cssProps = computed(() => {
         '--table-stripe-color': '#f1f1f1',
     }
 })
+
+const page = usePage();
 
 const showingNavigationDropdown = ref(false);
 </script>
@@ -45,7 +47,7 @@ const showingNavigationDropdown = ref(false);
                                 </NavLink>
 
                                 <NavLink :href="route('events.index')"
-                                         :active="route().current('events.index')">
+                                         :active="route().current('events.*')">
                                     Events
                                 </NavLink>
                             </div>
@@ -62,7 +64,7 @@ const showingNavigationDropdown = ref(false);
                                                 type="button"
                                                 class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
                                             >
-                                                {{ $page.props.auth.user.name }}
+                                                {{ page.props.auth.user.name }}
 
                                                 <svg
                                                     class="ms-2 -me-0.5 h-4 w-4"
@@ -144,9 +146,9 @@ const showingNavigationDropdown = ref(false);
                     <div class="pt-4 pb-1 border-t border-gray-200">
                         <div class="px-4">
                             <div class="font-medium text-base text-gray-800">
-                                {{ $page.props.auth.user.name }}
+                                {{ page.props.auth.user.name }}
                             </div>
-                            <div class="font-medium text-sm text-gray-500">{{ $page.props.auth.user.email }}</div>
+                            <div class="font-medium text-sm text-gray-500">{{ page.props.auth.user.email }}</div>
                         </div>
 
                         <div class="mt-3 space-y-1">
@@ -171,7 +173,7 @@ const showingNavigationDropdown = ref(false);
             -->
 
             <!-- Page Content -->
-            <main class="max-w-7xl mx-auto px-4 md:px-0 py-8">
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <slot/>
             </main>
         </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AlphaSpace;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -23,13 +24,13 @@ class EventRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'integer', 'exists:users,id'],
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'string', new AlphaSpace, 'max:255'],
             'description' => ['nullable', 'string'],
             'start_time' => ['required'],
             'start_date' => ['required', 'date'],
             'end_time' => ['nullable'],
             'end_date' => ['nullable', 'date'],
+            'users' => ['nullable', 'array']
         ];
     }
 }

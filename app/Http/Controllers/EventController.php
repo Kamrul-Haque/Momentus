@@ -38,8 +38,7 @@ class EventController extends Controller
                              ->where(function ($query) use ($search) {
                                  $query->where('title', 'LIKE', "%{$search}%")
                                        ->orWhereDate('start_at', 'LIKE', "%{$search}%")
-                                       ->orWhereDate('end_at', 'LIKE', "%{$search}%")
-                                       ->orWhere('status', 'LIKE', "%{$search}%");
+                                       ->orWhereDate('end_at', 'LIKE', "%{$search}%");
                              })
                              ->when($status, function ($query, $status) {
                                  $query->where('status', $status);
@@ -47,7 +46,7 @@ class EventController extends Controller
                              ->when($request->sortBy, function ($query, $sortBy) {
                                  $query->orderBy($sortBy, request()->boolean('sortDesc') ? 'desc' : 'asc');
                              }, function ($query) {
-                                 $query->orderBy('id', 'desc');
+                                 $query->orderBy('start_at', 'desc');
                              })
                              ->paginate($request->perPage)
                              ->withQueryString(),
@@ -113,8 +112,13 @@ class EventController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Event $event)
+    public function show(string $event)
     {
+        $event = Event::withTrashed()
+                      ->with('users')
+                      ->where('reminder_id', $event)
+                      ->firstOrFail();
+
         return inertia('Events/Show', ['event' => $event]);
     }
 
@@ -123,8 +127,8 @@ class EventController extends Controller
      */
     public function edit(Event $event)
     {
-        $users = User::where('id', '!=', auth()->id())->get();
-        $selected_users = $event->users()->pluck('id');
+        $users = User::whereNot('id', auth()->id())->get();
+        $selected_users = $event->users()->whereNot('id', auth()->user()->id)->pluck('id');
 
         return inertia('Events/Form', [
             'event' => $event,
@@ -185,7 +189,7 @@ class EventController extends Controller
     {
         $event->delete();
 
-        return back()->with('success', 'Event deactivated successfully');
+        return to_route('events.index')->with('success', 'Event deactivated successfully');
     }
 
     /**
