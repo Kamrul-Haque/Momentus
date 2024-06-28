@@ -1,0 +1,104 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito Sans&display=swap");
+@import "@mdi/font";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .avatar {
+        @apply bg-white rounded p-[2px];
+    }
+
+    .brand {
+        @apply hidden md:flex fixed h-[64px] w-64 px-5 text-white items-center transition-all ease-in-out duration-300;
+    }
+
+    .brand-title {
+        @apply font-extrabold md:text-xl pl-3;
+    }
+
+    .app {
+        @apply flex flex-col w-full min-h-screen relative;
+    }
+
+    .header {
+        @apply flex h-[64px] md:top-0 z-20 w-full fixed shadow-md;
+    }
+
+    .nav {
+        @apply w-full md:pl-64 bg-primary text-gray-300 flex justify-between items-center transition-all ease-in-out duration-300;
+    }
+
+    .header-link {
+        @apply inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-semibold rounded-md text-gray-300 bg-transparent hover:text-white active:text-white focus:outline-none focus:text-white transition ease-in-out duration-150;
+    }
+
+    .side-nav {
+        @apply fixed h-full p-0 md:p-2 md:h-screen left-0 bottom-0 top-[64px] md:max-h-[calc(100%-64px)] translate-x-0 bg-secondary text-gray-300 transition-all ease-in-out duration-300 shadow-md z-10 md:z-10;
+    }
+
+    .content {
+        @apply max-w-full bg-background px-3 pt-[64px] py-12;
+    }
+
+    .main {
+        @apply h-full min-h-[calc(100vh-115px)] w-full py-12;
+    }
+
+    .footer {
+        @apply bottom-0 absolute bg-white inset-x-0 py-4 text-center;
+    }
+
+    .container {
+        @apply max-w-full mx-auto sm:px-6 lg:px-8;
+    }
+
+    .card {
+        @apply bg-white shadow rounded-md;
+    }
+
+    .card-header {
+        @apply font-semibold text-xl text-gray-900 p-5 border-b;
+    }
+
+    .card-body {
+        @apply p-5 block;
+    }
+
+    .heading {
+        @apply text-2xl font-extrabold text-gray-900;
+    }
+
+    .btn {
+        @apply inline-flex items-center px-4 py-2 border border-transparent font-semibold text-xs text-white uppercase tracking-widest hover:opacity-75 focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150 rounded;
+    }
+
+    .btn-primary {
+        @apply bg-primary hover:bg-primary focus:bg-primary focus:ring-primary active:bg-primary;
+    }
+
+    .btn-secondary {
+        @apply bg-secondary hover:bg-secondary focus:bg-secondary focus:ring-secondary active:bg-secondary;
+    }
+
+    .btn-danger {
+        @apply bg-error hover:bg-error focus:bg-error focus:ring-error active:bg-error;
+    }
+
+    .label {
+        @apply block font-medium text-sm text-gray-800 mb-2;
+    }
+
+    .input {
+        @apply block w-full px-3 py-2 border-gray-200 focus:border-primary focus:ring-0 focus:outline-none shadow-sm rounded-md;
+    }
+
+    .file-input {
+        @apply w-full border focus:border-primary focus:ring-0 focus:outline-none rounded file:mr-4 file:py-2.5 file:px-4 file:rounded-l file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white
+    }
+
+    .validation-error {
+        @apply text-xs text-error;
+    }
+}
