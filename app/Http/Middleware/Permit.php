@@ -18,7 +18,7 @@ class Permit
      */
     public function handle(Request $request, Closure $next, int $role): Response
     {
-        if (auth()->user()->hasAccess($role))
+        if (auth()->check() && auth()->user()->hasRoleOrHigher($role))
             return $next($request);
 
         return back()->with('error', 'You are not authorized to perform this action');

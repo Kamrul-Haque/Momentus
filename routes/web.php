@@ -29,9 +29,8 @@ Route::get('/', function () {
 });
 
 Route::middleware('precognitive')->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->middleware(['auth', 'verified'])->name('dashboard');
+    Route::get('/dashboard', Controllers\DashboardController::class)->middleware(['auth', 'verified'])
+         ->name('dashboard');
 
     Route::get('users/{user}/image', [Controllers\UserController::class, 'getImage'])->name('users.image');
 

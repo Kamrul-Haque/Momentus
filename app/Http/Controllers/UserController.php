@@ -36,6 +36,7 @@ class UserController extends Controller
                            ->paginate($request->perPage)
                            ->withQueryString(),
             'filters' => [
+                'page' => $request->page,
                 'search' => $request->search,
                 'sortBy' => $request->sortBy,
                 'sortDesc' => $request->sortDesc,

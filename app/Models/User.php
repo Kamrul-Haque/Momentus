@@ -64,12 +64,23 @@ class User extends Authenticatable
     }
 
     /**
+     * Checks if the user has the given role
+     *
+     * @param int $role
+     * @return bool
+     */
+    public function hasRole(int $role): bool
+    {
+        return auth()->user()->role->value == $role;
+    }
+
+    /**
      * Checks if the user has access by the given role
      *
      * @param int $role
      * @return bool
      */
-    public function hasAccess(int $role): bool
+    public function hasRoleOrHigher(int $role): bool
     {
         return auth()->user()->role->value <= $role;
     }

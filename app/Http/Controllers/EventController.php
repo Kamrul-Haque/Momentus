@@ -3,25 +3,63 @@
 namespace App\Http\Controllers;
 
 use App\Enums\EventStatus;
+use App\Enums\Role;
 use App\Http\Requests\EventRequest;
-use App\Http\Resources\EventResource;
 use App\Mail\EventAssignedMail;
 use App\Models\Event;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class EventController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $events = Event::latest()->paginate();
+        $userId = auth()->user()->hasRoleOrHigher(Role::ADMIN->value) ? null : auth()->user()->id;
+        $search = Str::length($request->search) > 2 ? $request->search : null;
+        $status = $request->status === 'all' ? null : $request->status;
 
-        return inertia('Events/Index', ['events' => $events]);
+        return inertia('Events/Index', [
+            'events' => Event::withTrashed()
+                             ->with('users')
+                             ->where(function ($query) use ($userId) {
+                                 $query->when($userId, function ($query) use ($userId) {
+                                     $query->whereHas('users', function ($query) use ($userId) {
+                                         $query->where('user_id', $userId);
+                                     });
+                                 });
+                             })
+                             ->where(function ($query) use ($search) {
+                                 $query->where('title', 'LIKE', "%{$search}%")
+                                       ->orWhereDate('start_at', 'LIKE', "%{$search}%")
+                                       ->orWhereDate('end_at', 'LIKE', "%{$search}%")
+                                       ->orWhere('status', 'LIKE', "%{$search}%");
+                             })
+                             ->when($status, function ($query, $status) {
+                                 $query->where('status', $status);
+                             })
+                             ->when($request->sortBy, function ($query, $sortBy) {
+                                 $query->orderBy($sortBy, request()->boolean('sortDesc') ? 'desc' : 'asc');
+                             }, function ($query) {
+                                 $query->orderBy('id', 'desc');
+                             })
+                             ->paginate($request->perPage)
+                             ->withQueryString(),
+            'filters' => [
+                'page' => $request->page,
+                'search' => $request->search,
+                'sortBy' => $request->sortBy,
+                'sortDesc' => $request->sortDesc,
+                'status' => $request->status,
+                'perPage' => $request->perPage,
+            ]
+        ]);
     }
 
     /**

@@ -45,7 +45,10 @@ function selectItem(suggestion) {
     focused.value = false;
     highlightedIndex.value = -1;
 
-    emit('update:modelValue', suggestion[props.itemValue]);
+    if (typeof suggestion === 'object')
+        emit('update:modelValue', suggestion[props.itemValue]);
+    else
+        emit('update:modelValue', suggestion);
 }
 
 watch(query, () => {

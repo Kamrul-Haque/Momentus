@@ -4,33 +4,24 @@ namespace App\Models;
 
 use App\Casts\LocalDateTime;
 use App\Enums\EventStatus;
-use App\Services\GenerateUniqueIdService;
+use App\Observers\EventObserver;
 use App\Traits\HasCreatedBy;
 use App\Traits\HasDuration;
 use App\Traits\HasIsOwner;
-use App\Traits\SetOwner;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
+#[ObservedBy([EventObserver::class])]
 class Event extends Model
 {
-    use HasFactory, SoftDeletes, HasCreatedBy, HasIsOwner, SetOwner, HasDuration;
+    use HasFactory, SoftDeletes, HasCreatedBy, HasIsOwner, HasDuration;
 
     protected $guarded = ['id'];
-
-    /**
-     * Generate unique reminder_id while creating new model object.
-     *
-     * @return void
-     */
-    public static function booted(): void
-    {
-        static::creating(function ($model) {
-            $model->reminder_id = GenerateUniqueIdService::generate('EVT');
-        });
-    }
+    protected $appends = ['status_name'];
 
     /**
      * Override the route key for the model.
@@ -54,6 +45,11 @@ class Event extends Model
             'start_at' => LocalDateTime::class,
             'end_at' => LocalDateTime::class,
         ];
+    }
+
+    public function getStatusNameAttribute(): string
+    {
+        return Str::lower($this->status->name);
     }
 
     /**

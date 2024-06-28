@@ -41,6 +41,7 @@ const props = defineProps({
 });
 
 const params = reactive({
+    page: props.filters.page ? props.filters.page : 1,
     search: props.filters.search ? props.filters.search : '',
     sortBy: props.filters.sortBy ? props.filters.sortBy : null,
     sortDesc: !!props.filters.sortDesc,
