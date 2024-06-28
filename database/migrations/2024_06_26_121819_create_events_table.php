@@ -10,21 +10,19 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('phone')->nullable()->unique();
-            $table->string('address')->nullable();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->tinyInteger('role')->default(3);
-            $table->string('image')->nullable();
+        Schema::create('events', function (Blueprint $table) {
+            $table->id()->primary();
+            $table->string('reminder_id')->unique();
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->timestamp('start_at');
+            $table->timestamp('end_at')->nullable();
+            $table->tinyInteger('status');
+            $table->integer('duration')->unsigned()->nullable();
             $table->foreignId('created_by_id')
                   ->nullable()
                   ->constrained('users')
                   ->nullOnDelete();
-            $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -35,6 +33,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('events');
     }
 };

@@ -33,14 +33,6 @@ class UserSeeder extends Seeder
             'role' => 3,
         ]);
 
-        /*foreach (range('A', 'Z') as $index => $alphabet)
-        {
-            User::create([
-                'name' => 'Mr. User ' . $alphabet,
-                'email' => 'user' . Str::lower($alphabet) . '@email.com',
-                'password' => bcrypt('Buyonia@12345'),
-                'role' => 3,
-            ]);
-        }*/
+        User::factory(10)->create();
     }
 }
