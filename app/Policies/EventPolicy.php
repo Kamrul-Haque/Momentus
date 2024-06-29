@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Event;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class EventPolicy
 {
@@ -19,40 +18,32 @@ class EventPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Event $event): Response
+    public function update(User $user, Event $event): bool
     {
-        return $event->is_owner
-            ? Response::allow()
-            : Response::deny('You do not own this event.');
+        return $event->is_owner;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Event $event): Response
+    public function delete(User $user, Event $event): bool
     {
-        return $event->is_owner
-            ? Response::allow()
-            : Response::deny('You do not own this event.');
+        return $event->is_owner;
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Event $event): Response
+    public function restore(User $user, Event $event): bool
     {
-        return $event->is_owner
-            ? Response::allow()
-            : Response::deny('You do not own this event.');
+        return $event->is_owner;
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Event $event): Response
+    public function forceDelete(User $user, Event $event): bool
     {
-        return $event->is_owner
-            ? Response::allow()
-            : Response::deny('You do not own this event.');
+        return $event->is_owner;
     }
 }

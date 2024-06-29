@@ -30,7 +30,7 @@ function deleteItem() {
             </Link>
 
             <div class="flex items-center gap-2">
-                <div class="text-xl font-medium hover:underline hover:text-primary hover:cursor-pointer"
+                <div class="text-xl font-medium"
                      title="title">
                     {{ event.title }}
                 </div>

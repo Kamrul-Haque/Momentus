@@ -23,26 +23,6 @@ class EventObserver
     }
 
     /**
-     * Handle the Event "created" event.
-     */
-    public function created(Event $event): void
-    {
-        $owner_id = $event->created_by_id;
-
-        $event->users()->sync($owner_id, false);
-    }
-
-    /**
-     * Handle the Event "updated" event.
-     */
-    public function updated(Event $event): void
-    {
-        $owner_id = $event->created_by_id;
-
-        $event->users()->sync($owner_id, false);
-    }
-
-    /**
      * Handle the Event "updating" event.
      */
     public function updating(Event $event): void

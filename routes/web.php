@@ -40,7 +40,7 @@ Route::middleware('precognitive')->group(function () {
         Route::delete('/profile', [Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
 
         Route::resource('/events', Controllers\EventController::class);
-        Route::put('events/{event}', [Controllers\EventController::class, 'restore'])->name('events.restore');
+        Route::put('events/{event}/restore', [Controllers\EventController::class, 'restore'])->name('events.restore');
         Route::delete('events/{event}/delete', [Controllers\EventController::class, 'delete'])->name('events.delete');
     });
 

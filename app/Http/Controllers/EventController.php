@@ -93,12 +93,13 @@ class EventController extends Controller
         $validated['status'] = Carbon::create($validated['start_date'])->lessThan(today())
             ? EventStatus::COMPLETED->value
             : EventStatus::UPCOMING->value;
+        $validated['users'][] = auth()->user()->id;
 
         $event = Event::create(Arr::except($validated, 'users'));
 
         if (sizeof($validated['users']))
         {
-            if ($event->users()->sync($validated['users'], false))
+            if ($event->users()->sync($validated['users']))
             {
                 try
                 {
@@ -166,6 +167,7 @@ class EventController extends Controller
             ? EventStatus::COMPLETED->value
             : EventStatus::UPCOMING->value;
         $users = $event->users;
+        $validated['users'][] = auth()->user()->id;
 
         $event->update(Arr::except($validated, 'users'));
 
@@ -213,9 +215,11 @@ class EventController extends Controller
      */
     public function restore($event)
     {
+        $event = Event::onlyTrashed()->find($event);
+
         Gate::authorize('restore', $event);
 
-        Event::onlyTrashed()->find($event)->restore();
+        $event->restore();
 
         return back()->with('success', 'Event reactivated successfully');
     }
@@ -225,9 +229,11 @@ class EventController extends Controller
      */
     public function delete($event)
     {
+        $event = Event::onlyTrashed()->find($event);
+
         Gate::authorize('forceDelete', $event);
 
-        Event::onlyTrashed()->find($event)->forceDelete();
+        $event->forceDelete();
 
         return to_route('events.index')->with('success', 'Event deleted successfully');
     }
