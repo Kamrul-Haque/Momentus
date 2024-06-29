@@ -4,8 +4,9 @@ import {Head, Link, router} from "@inertiajs/vue3";
 import TextField from "@/Components/TextField.vue";
 import Select from "@/Components/Select.vue";
 import Paginator from "@/Components/Paginator.vue";
-import {reactive, ref, watch} from "vue";
-import {debounce} from "lodash";
+import {reactive, watch} from "vue";
+import Dropdown from "@/Components/Dropdown.vue";
+import DropdownLink from "@/Components/DropdownLink.vue";
 
 const props = defineProps(['events', 'statuses', 'filters'])
 
@@ -15,11 +16,8 @@ const params = reactive({
     status: props.filters.status ? props.filters.status : 'upcoming',
     sortBy: props.filters.sortBy ? props.filters.sortBy : null,
     sortDesc: !!props.filters.sortDesc,
-    perPage: props.filters.perPage ? parseInt(props.filters.perPage) : 15,
+    perPage: props.filters.perPage ? parseInt(props.filters.perPage) : 5,
 });
-
-const search = ref(params.search);
-const perPage = ref(params.perPage)
 
 watch(params, (newVal, oldVal) => {
     if (newVal.perPage !== oldVal.perPage) {
@@ -30,20 +28,6 @@ watch(params, (newVal, oldVal) => {
     deep: true
 });
 
-watch(search, debounce((value) => {
-    if (value) {
-        params.search = value;
-        updateData();
-    }
-}, 500));
-
-watch(perPage, (value) => {
-    if (value) {
-        params.perPage = value;
-        updateData();
-    }
-})
-
 async function updateData() {
     router.get(route('events.index'), params, {
         preserveScroll: true,
@@ -52,14 +36,9 @@ async function updateData() {
     });
 }
 
-function sort(sortBy) {
-    if (params.sortBy === sortBy) {
-        params.sortDesc = !params.sortDesc;
-    } else {
-        params.sortBy = sortBy;
-        params.sortDesc = false;
-    }
-    updateData();
+function sort(sortBy, sortDesc) {
+    params.sortBy = sortBy
+    params.sortDesc = sortDesc
 }
 </script>
 
@@ -68,7 +47,7 @@ function sort(sortBy) {
         <Head title="Events"/>
 
         <div class="md:flex justify-between items-center space-y-2 md:space-y-0">
-            <div class="flex-1 flex items-center">
+            <div class="flex-1 flex items-center gap-1">
                 <!--                <h1 class="heading capitalize">
                                     Events
                                 </h1>-->
@@ -77,9 +56,39 @@ function sort(sortBy) {
                         :height="8"
                         :items="['all', ...statuses]"
                         name="status"/>
+
+                <div class="ms-3 relative">
+                    <Dropdown align="right"
+                              width="48">
+                        <template #trigger>
+                        <span class="inline-flex rounded-md">
+                            <button type="button"
+                                    class="inline-flex justify-between items-center bg-white rounded px-4 py-1 text-gray-600 hover:text-primary focus:outline-none focus:text-primary transition ease-in-out duration-150 shadow">
+                                <i class="mdi mdi-sort-ascending"></i>
+                                <i class="mdi mdi-chevron-down"></i>
+                            </button>
+                        </span>
+                        </template>
+
+                        <template #content>
+                            <DropdownLink @click="sort('id', true)">
+                                Newest
+                            </DropdownLink>
+                            <DropdownLink @click="sort('id', false)">
+                                Oldest
+                            </DropdownLink>
+                            <DropdownLink @click="sort('start_at', true)">
+                                Starting At (Ascending)
+                            </DropdownLink>
+                            <DropdownLink @click="sort('start_at', false)">
+                                Starting At (Descending)
+                            </DropdownLink>
+                        </template>
+                    </Dropdown>
+                </div>
             </div>
 
-            <div class="flex items-center">
+            <div class="flex items-center gap-1">
                 <TextField v-model="params.search"
                            class="flex-1"
                            height="8"
@@ -88,7 +97,7 @@ function sort(sortBy) {
                            prepend-icon="mdi mdi-magnify"/>
 
                 <Link :href="route('events.create')"
-                      class="btn btn-primary text-white h-8 ml-1">
+                      class="btn btn-primary text-white h-8">
                     <span class="mdi mdi-plus-circle-outline mr-1"/>
                     Create
                 </Link>
@@ -167,7 +176,7 @@ function sort(sortBy) {
                        for="perPage">
                     Items:
                 </label>
-                <Select v-model="perPage"
+                <Select v-model="params.perPage"
                         class="w-[64px]"
                         :height="8"
                         :items="['5','10','15','20','25','30']"

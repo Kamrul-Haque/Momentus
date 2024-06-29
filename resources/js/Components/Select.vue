@@ -1,5 +1,5 @@
 <script setup>
-import {computed, nextTick, onMounted, ref, watch} from "vue";
+import {computed, nextTick, onMounted, onUnmounted, ref, watch} from "vue";
 
 const props = defineProps({
     modelValue: {
@@ -58,6 +58,12 @@ watch(query, () => {
     }
 })
 
+function handleBlur(event) {
+    if (!preventBlur.value && !input.value.contains(event.target) && !(suggestionList.value && suggestionList.value.contains(event.target))) {
+        focused.value = false;
+    }
+}
+
 function handleKeyDown(event) {
     if (event.key === 'ArrowDown') {
         event.preventDefault();
@@ -109,9 +115,7 @@ const input = ref(null);
 const suggestionList = ref(null);
 
 onMounted(() => {
-    if (input.value.hasAttribute('autofocus')) {
-        input.value.focus();
-    }
+    document.addEventListener('click', handleGlobalClick);
 
     if (props.modelValue !== null) {
         let item;
@@ -125,6 +129,17 @@ onMounted(() => {
         selectItem(item);
     }
 });
+
+onUnmounted(() => {
+    document.removeEventListener('click', handleGlobalClick);
+});
+
+
+function handleGlobalClick(event) {
+    if (!input.value.contains(event.target) && !(suggestionList.value && suggestionList.value.contains(event.target))) {
+        focused.value = false;
+    }
+}
 </script>
 
 <template>
@@ -152,7 +167,7 @@ onMounted(() => {
                        autocomplete="off"
                        @keydown="handleKeyDown"
                        @focus="focused = true"
-                       @blur="() => { if (!preventBlur) focused = false; }"
+                       @blur="handleBlur"
                        ref="input"
                        readonly/>
                 <transition name="fade">

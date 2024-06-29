@@ -11,6 +11,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -126,6 +127,8 @@ class EventController extends Controller
                       ->where('reminder_id', $event)
                       ->firstOrFail();
 
+        Gate::authorize('view', $event);
+
         return inertia('Events/Show', ['event' => $event]);
     }
 
@@ -134,6 +137,8 @@ class EventController extends Controller
      */
     public function edit(Event $event)
     {
+        Gate::authorize('update', $event);
+
         $users = User::whereNot('id', auth()->id())->get();
         $selected_users = $event->users()->whereNot('id', auth()->user()->id)->pluck('id');
 
@@ -149,6 +154,8 @@ class EventController extends Controller
      */
     public function update(EventRequest $request, Event $event)
     {
+        Gate::authorize('update', $event);
+
         $validated = $request->validated();
 
         $validated['start_at'] = $validated['start_date'] . ' ' . $validated['start_time'];
@@ -194,6 +201,8 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
+        Gate::authorize('delete', $event);
+
         $event->delete();
 
         return back()->with('success', 'Event deactivated successfully');
@@ -204,6 +213,8 @@ class EventController extends Controller
      */
     public function restore($event)
     {
+        Gate::authorize('restore', $event);
+
         Event::onlyTrashed()->find($event)->restore();
 
         return back()->with('success', 'Event reactivated successfully');
@@ -214,6 +225,8 @@ class EventController extends Controller
      */
     public function delete($event)
     {
+        Gate::authorize('forceDelete', $event);
+
         Event::onlyTrashed()->find($event)->forceDelete();
 
         return to_route('events.index')->with('success', 'Event deleted successfully');

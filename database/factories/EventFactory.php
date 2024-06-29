@@ -16,7 +16,7 @@ class EventFactory extends Factory
 
         return [
             'title' => $this->faker->sentence($this->faker->numberBetween(2, 5)),
-            'description' => $this->faker->paragraph(),
+            'description' => $this->faker->paragraphs($this->faker->numberBetween(1, 20), true),
             'start_at' => $start_at,
             'end_at' => Carbon::parse($start_at)->addDays($this->faker->numberBetween(1, 10)),
             'created_at' => Carbon::now(),

@@ -55,7 +55,8 @@ function deleteItem() {
                     <template #trigger>
                         <span class="inline-flex rounded-md">
                             <button type="button"
-                                    class="text-2xl text-gray-600 hover:text-primary focus:outline-none focus:text-primary transition ease-in-out duration-150">
+                                    class="text-2xl text-gray-600 hover:text-primary focus:outline-none focus:text-primary transition ease-in-out duration-150 disabled:text-gray-400"
+                                    :disabled="!event.is_owner">
                                 <i class="mdi mdi-dots-vertical"></i>
                             </button>
                         </span>
