@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\EventStatus;
 use App\Enums\Role;
 use App\Http\Requests\EventRequest;
+use App\Imports\EventsImport;
 use App\Mail\EventAssignedMail;
 use App\Models\Event;
 use App\Models\User;
@@ -14,6 +15,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class EventController extends Controller
 {
@@ -236,5 +238,21 @@ class EventController extends Controller
         $event->forceDelete();
 
         return to_route('events.index')->with('success', 'Event deleted successfully');
+    }
+
+    public function importCreate()
+    {
+        return inertia('Events/Import');
+    }
+
+    public function importStore(Request $request)
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:csv', 'max:25600'],
+        ]);
+
+        Excel::import(new EventsImport(auth()->user()->id), $request->file('file'));
+
+        return to_route('events.index')->with('success', 'Events imported successfully');
     }
 }

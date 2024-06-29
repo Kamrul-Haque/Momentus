@@ -31,7 +31,7 @@ function submit() {
 </script>
 
 <template>
-    <Head title="Settings"/>
+    <Head title="Events"/>
 
     <Auth>
         <div class="card w-full md:w-3/4 mx-auto">
@@ -83,7 +83,7 @@ function submit() {
                               :error="form.errors.description"/>
 
                     <div class="text-right mt-8">
-                        <DarkButton :href="route('events.index')"
+                        <DarkButton :href="event ? route('events.show', event.reminder_id) : route('events.index')"
                                     class="mr-1">
                             Cancel
                         </DarkButton>

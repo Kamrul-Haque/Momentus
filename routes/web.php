@@ -39,9 +39,11 @@ Route::middleware('precognitive')->group(function () {
         Route::patch('/profile', [Controllers\ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
 
-        Route::resource('/events', Controllers\EventController::class);
+        Route::resource('events', Controllers\EventController::class);
         Route::put('events/{event}/restore', [Controllers\EventController::class, 'restore'])->name('events.restore');
         Route::delete('events/{event}/delete', [Controllers\EventController::class, 'delete'])->name('events.delete');
+        Route::get('events-import', [Controllers\EventController::class, 'importCreate'])->name('events.import.create');
+        Route::post('events-import', [Controllers\EventController::class, 'importStore'])->name('events.import.store');
     });
 
     Route::middleware('permit:' . Role::ADMIN->value)->group(function () {

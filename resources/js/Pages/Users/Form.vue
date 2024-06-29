@@ -32,7 +32,7 @@ function submit() {
 </script>
 
 <template>
-    <Head title="Settings"/>
+    <Head title="Users"/>
 
     <Admin>
         <div class="card w-full md:w-3/4 mx-auto">

@@ -7,6 +7,7 @@ import Paginator from "@/Components/Paginator.vue";
 import {reactive, watch} from "vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
+import DarkButton from "@/Components/DarkButton.vue";
 
 const props = defineProps(['events', 'statuses', 'filters'])
 
@@ -48,9 +49,6 @@ function sort(sortBy, sortDesc) {
 
         <div class="md:flex justify-between items-center space-y-2 md:space-y-0">
             <div class="flex-1 flex items-center gap-1">
-                <!--                <h1 class="heading capitalize">
-                                    Events
-                                </h1>-->
                 <Select v-model="params.status"
                         class="w-[150px]"
                         :height="8"
@@ -85,6 +83,13 @@ function sort(sortBy, sortDesc) {
                             </DropdownLink>
                         </template>
                     </Dropdown>
+                </div>
+
+                <div>
+                    <DarkButton :href="route('events.import.create')">
+                        <i class="mdi mdi-upload-circle mr-1"></i>
+                        Import
+                    </DarkButton>
                 </div>
             </div>
 
