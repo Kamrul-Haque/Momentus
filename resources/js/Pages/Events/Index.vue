@@ -7,11 +7,12 @@ import Paginator from "@/Components/Paginator.vue";
 import {reactive, ref, watch} from "vue";
 import {debounce} from "lodash";
 
-const props = defineProps(['events', 'filters'])
+const props = defineProps(['events', 'statuses', 'filters'])
 
 const params = reactive({
     page: props.filters.page ? props.filters.page : 1,
     search: props.filters.search ? props.filters.search : '',
+    status: props.filters.status ? props.filters.status : 'upcoming',
     sortBy: props.filters.sortBy ? props.filters.sortBy : null,
     sortDesc: !!props.filters.sortDesc,
     perPage: props.filters.perPage ? parseInt(props.filters.perPage) : 15,
@@ -68,13 +69,14 @@ function sort(sortBy) {
 
         <div class="md:flex justify-between items-center space-y-2 md:space-y-0">
             <div class="flex-1 flex items-center">
-                <h1 class="heading capitalize">
-                    Events
-                </h1>
-                <!--                <div v-if="$slots.filter"
-                                     class="ml-4">
-                                    <slot name="filter"></slot>
-                                </div>-->
+                <!--                <h1 class="heading capitalize">
+                                    Events
+                                </h1>-->
+                <Select v-model="params.status"
+                        class="w-[150px]"
+                        :height="8"
+                        :items="['all', ...statuses]"
+                        name="status"/>
             </div>
 
             <div class="flex items-center">
@@ -93,55 +95,68 @@ function sort(sortBy) {
             </div>
         </div>
 
-        <div v-for="(event, index) in events.data"
-             :key="index"
-             class="card mb-4">
-            <div class="card-body">
-                <div class="flex justify-between mb-2">
-                    <Link :href="route('events.show', event.reminder_id)"
-                          as="div"
-                          class="text-lg hover:underline hover:text-primary hover:cursor-pointer"
-                          title="title">
-                        {{ event.title }}
-                    </Link>
-                    <div>
-                        <div v-if="event.deleted_at"
-                             class="rounded-full px-4 py-1 text-sm bg-gray-200 text-gray-600 text-center capitalize"
-                             title="status">
-                            archived
+        <template v-if="events.data.length">
+            <div v-for="(event, index) in events.data"
+                 :key="index"
+                 class="card mb-4">
+                <div class="card-body">
+                    <div class="flex justify-between mb-2">
+                        <div class="flex items-center gap-1">
+                            <Link :href="route('events.show', event.reminder_id)"
+                                  as="div"
+                                  class="text-lg hover:underline hover:text-primary hover:cursor-pointer"
+                                  title="title">
+                                {{ event.title }}
+                            </Link>
+                            <p v-if="event.duration"
+                               class="text-sm text-gray-500"
+                               title="duration">
+                                <i class="mdi mdi-timer-sand"></i>
+                                {{ event.duration }}
+                            </p>
                         </div>
-                        <div v-else
-                             :class="[event.status_name === 'upcoming' ? 'bg-blue-50 text-primary' : 'bg-green-100 text-success']"
-                             class="rounded-full px-4 py-1 text-sm text-center capitalize"
-                             title="status">
-                            {{ event.status_name }}
+                        <div>
+                            <div v-if="event.deleted_at"
+                                 class="rounded-full px-4 py-1 text-sm bg-gray-200 text-gray-600 text-center capitalize"
+                                 title="status">
+                                archived
+                            </div>
+                            <div v-else
+                                 :class="[event.status_name === 'upcoming' ? 'bg-blue-100 text-primary' : 'bg-green-100 text-success']"
+                                 class="rounded-full px-4 py-1 text-sm text-center capitalize"
+                                 title="status">
+                                {{ event.status_name }}
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="flex gap-2 text-sm text-gray-500 flex-wrap">
-                    <div class="flex gap-1"
-                         title="start time">
-                        <i class="mdi mdi-clock"></i>
-                        <p>{{ event.start_at.time }}</p>
-                    </div>
-                    <div class="flex gap-1"
-                         title="start date">
-                        <i class="mdi mdi-calendar-blank"></i>
-                        <p>{{ event.start_at.date }}</p>
-                    </div>
-                    <div class="flex gap-1"
-                         title="created by">
-                        <i class="mdi mdi-account"></i>
-                        <p>{{ event.created_by_name }}</p>
-                    </div>
-                    <div class="flex gap-1"
-                         title="attendees">
-                        <i class="mdi mdi-account-multiple"></i>
-                        <p>{{ event.users.length }} Person</p>
+                    <div class="flex gap-2 text-sm text-gray-500 flex-wrap">
+                        <div class="flex gap-1"
+                             title="start time">
+                            <i class="mdi mdi-clock"></i>
+                            <p>{{ event.start_at.time }}</p>
+                        </div>
+                        <div class="flex gap-1"
+                             title="start date">
+                            <i class="mdi mdi-calendar-blank"></i>
+                            <p>{{ event.start_at.date }}</p>
+                        </div>
+                        <div class="flex gap-1"
+                             title="attendees">
+                            <i class="mdi mdi-account-multiple"></i>
+                            <p>{{ event.users.length }} Person</p>
+                        </div>
+                        <div class="flex gap-1"
+                             title="created by">
+                            <i class="mdi mdi-account"></i>
+                            <p>{{ event.created_by_name }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </template>
+        <template v-else>
+            <p class="text-center">No Data Found.</p>
+        </template>
 
         <div class="flex justify-between items-center">
             <div class="flex-1">
@@ -153,15 +168,11 @@ function sort(sortBy) {
                     Items:
                 </label>
                 <Select v-model="perPage"
-                        class="min-w-[64px]"
-                        :height="10"
+                        class="w-[64px]"
+                        :height="8"
                         :items="['5','10','15','20','25','30']"
                         name="perPage"/>
             </div>
         </div>
     </Auth>
 </template>
-
-<style scoped>
-
-</style>

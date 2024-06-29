@@ -6,6 +6,7 @@ import TextArea from "@/Components/TextArea.vue";
 import {useForm} from 'laravel-precognition-vue-inertia';
 import MultiSelect from "@/Components/MultiSelect.vue";
 import Auth from "@/Layouts/Auth.vue";
+import DarkButton from "@/Components/DarkButton.vue";
 
 const props = defineProps({
     event: Object,
@@ -82,6 +83,10 @@ function submit() {
                               :error="form.errors.description"/>
 
                     <div class="text-right mt-8">
+                        <DarkButton :href="route('events.index')"
+                                    class="mr-1">
+                            Cancel
+                        </DarkButton>
                         <PrimaryButton type="submit">Save</PrimaryButton>
                     </div>
                 </form>

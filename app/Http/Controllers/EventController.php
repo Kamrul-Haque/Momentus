@@ -21,7 +21,7 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
-        $userId = auth()->user()->hasRoleOrHigher(Role::ADMIN->value) ? null : auth()->user()->id;
+        $userId = auth()->user()->hasRoleOrHigher(Role::SUPER_ADMIN->value) ? null : auth()->user()->id;
         $search = Str::length($request->search) > 2 ? $request->search : null;
         $status = $request->status === 'all' ? null : $request->status;
 
@@ -36,28 +36,35 @@ class EventController extends Controller
                                  });
                              })
                              ->where(function ($query) use ($search) {
-                                 $query->where('title', 'LIKE', "%{$search}%")
-                                       ->orWhereDate('start_at', 'LIKE', "%{$search}%")
-                                       ->orWhereDate('end_at', 'LIKE', "%{$search}%");
+                                 $query->where('title', 'LIKE', "%{$search}%");
                              })
-                             ->when($status, function ($query, $status) {
-                                 $query->where('status', $status);
+                             ->when($status == 'archived', function ($query) {
+                                 $query->whereNot('deleted_at', null);
+                             })
+                             ->when($status == 'upcoming', function ($query) {
+                                 $query->where('start_at', '>', now())
+                                       ->where('deleted_at', null);
+                             })
+                             ->when($status == 'completed', function ($query) {
+                                 $query->where('end_at', '<=', now())
+                                       ->where('deleted_at', null);
                              })
                              ->when($request->sortBy, function ($query, $sortBy) {
                                  $query->orderBy($sortBy, request()->boolean('sortDesc') ? 'desc' : 'asc');
                              }, function ($query) {
-                                 $query->orderBy('start_at', 'desc');
+                                 $query->orderBy('id', 'desc');
                              })
                              ->paginate($request->perPage)
                              ->withQueryString(),
             'filters' => [
                 'page' => $request->page,
                 'search' => $request->search,
+                'status' => $request->status,
                 'sortBy' => $request->sortBy,
                 'sortDesc' => $request->sortDesc,
-                'status' => $request->status,
                 'perPage' => $request->perPage,
-            ]
+            ],
+            'statuses' => EventStatus::names()
         ]);
     }
 
@@ -189,7 +196,7 @@ class EventController extends Controller
     {
         $event->delete();
 
-        return to_route('events.index')->with('success', 'Event deactivated successfully');
+        return back()->with('success', 'Event deactivated successfully');
     }
 
     /**
@@ -209,6 +216,6 @@ class EventController extends Controller
     {
         Event::onlyTrashed()->find($event)->forceDelete();
 
-        return to_route('users.index')->with('success', 'Event deleted successfully');
+        return to_route('events.index')->with('success', 'Event deleted successfully');
     }
 }

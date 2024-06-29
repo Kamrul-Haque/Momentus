@@ -12,7 +12,7 @@ class DashboardController extends Controller
      */
     public function __invoke(Request $request)
     {
-        if (auth()->user()->hasRole(Role::USER->value))
+        if (!auth()->user()->hasRole(Role::SUPER_ADMIN->value))
             return inertia('UserDashboard');
 
         return inertia('Dashboard');

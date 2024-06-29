@@ -8,6 +8,7 @@ use App\Observers\EventObserver;
 use App\Traits\HasCreatedBy;
 use App\Traits\HasDuration;
 use App\Traits\HasIsOwner;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +22,7 @@ class Event extends Model
     use HasFactory, SoftDeletes, HasCreatedBy, HasIsOwner, HasDuration;
 
     protected $guarded = ['id'];
-    protected $appends = ['status_name'];
+    protected $appends = ['status', 'status_name'];
 
     /**
      * Override the route key for the model.
@@ -41,10 +42,20 @@ class Event extends Model
     protected function casts(): array
     {
         return [
-            'status' => EventStatus::class,
             'start_at' => LocalDateTime::class,
             'end_at' => LocalDateTime::class,
         ];
+    }
+
+    public function getStatusAttribute(): EventStatus
+    {
+        if ($this->deleted_at)
+            return EventStatus::ARCHIVED;
+
+        if (Carbon::parse($this->getRawOriginal('start_at'))->isPast())
+            return EventStatus::COMPLETED;
+
+        return EventStatus::UPCOMING;
     }
 
     public function getStatusNameAttribute(): string

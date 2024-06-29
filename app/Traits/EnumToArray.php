@@ -8,7 +8,9 @@ trait EnumToArray
 {
     public static function names(): array
     {
-        return array_column(self::cases(), 'name');
+        return array_map(function ($item) {
+            return strtolower($item);
+        }, array_column(self::cases(), 'name'));
     }
 
     public static function values(): array

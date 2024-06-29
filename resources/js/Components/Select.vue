@@ -142,7 +142,7 @@ onMounted(() => {
             </div>
             <div class="relative w-full"
                  @focus="focused">
-                <input class="input"
+                <input class="input capitalize"
                        :class="[error ? 'border-error' : 'border-gray-200', prependIcon ? 'pl-9' : '', rounded ? 'rounded-full' : 'rounded-md', height ? `h-${height}` : '']"
                        v-model="query"
                        type="text"
@@ -162,7 +162,7 @@ onMounted(() => {
                         <li v-for="(suggestion, index) in filteredSuggestions"
                             :key="index"
                             @mousedown="selectItem(suggestion)"
-                            :class="['p-2 cursor-pointer rounded', highlightedIndex === index ? 'bg-primary text-white' : 'hover:bg-primary hover:text-white']">
+                            :class="['p-2 cursor-pointer rounded capitalize', highlightedIndex === index ? 'bg-primary text-white' : 'hover:bg-primary hover:text-white']">
                             {{ typeof suggestion === 'object' ? suggestion[itemLabel] : suggestion }}
                         </li>
                     </ul>

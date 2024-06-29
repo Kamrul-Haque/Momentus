@@ -50,6 +50,12 @@ const showingNavigationDropdown = ref(false);
                                          :active="route().current('events.*')">
                                     Events
                                 </NavLink>
+
+                                <NavLink v-if="page.props.auth.user.role < 3"
+                                         :href="route('users.index')"
+                                         :active="route().current('users.*')">
+                                    Users
+                                </NavLink>
                             </div>
                         </div>
 
@@ -60,10 +66,8 @@ const showingNavigationDropdown = ref(false);
                                           width="48">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
-                                            >
+                                            <button type="button"
+                                                    class="inline-flex items-center text-gray-600 hover:text-primary focus:outline-none focus:text-primary transition ease-in-out duration-150">
                                                 {{ page.props.auth.user.name }}
 
                                                 <svg

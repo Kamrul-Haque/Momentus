@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Event;
 use App\Services\GenerateUniqueIdService;
+use Carbon\Carbon;
 
 class EventObserver
 {
@@ -13,6 +14,12 @@ class EventObserver
     public function creating(Event $event): void
     {
         $event->reminder_id = GenerateUniqueIdService::generate('EVT');
+
+        if ($event->end_at)
+            $event->duration = Carbon::create($event->getAttributes()['start_at'])
+                                     ->diffInMinutes($event->getAttributes()['end_at']);
+        else
+            $event->duration = null;
     }
 
     /**
@@ -36,26 +43,14 @@ class EventObserver
     }
 
     /**
-     * Handle the Event "deleted" event.
+     * Handle the Event "updating" event.
      */
-    public function deleted(Event $event): void
+    public function updating(Event $event): void
     {
-        //
-    }
-
-    /**
-     * Handle the Event "restored" event.
-     */
-    public function restored(Event $event): void
-    {
-        //
-    }
-
-    /**
-     * Handle the Event "force deleted" event.
-     */
-    public function forceDeleted(Event $event): void
-    {
-        //
+        if ($event->end_at)
+            $event->duration = Carbon::create($event->getAttributes()['start_at'])
+                                     ->diffInMinutes($event->getAttributes()['end_at']);
+        else
+            $event->duration = null;
     }
 }

@@ -10,4 +10,5 @@ enum EventStatus: int
 
     case UPCOMING = 1;
     case COMPLETED = 2;
+    case ARCHIVED = 3;
 }

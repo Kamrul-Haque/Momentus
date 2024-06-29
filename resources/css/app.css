@@ -90,6 +90,10 @@
         @apply bg-error hover:bg-error focus:bg-error focus:ring-error active:bg-error;
     }
 
+    .btn-dark {
+        @apply bg-gray-900 text-white hover:bg-gray-900 focus:bg-gray-900 focus:ring-gray-900 active:bg-gray-900;
+    }
+
     .label {
         @apply block font-medium text-sm text-gray-800 mb-2;
     }

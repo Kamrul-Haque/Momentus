@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Event;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class EventSeeder extends Seeder
@@ -12,6 +13,15 @@ class EventSeeder extends Seeder
      */
     public function run(): void
     {
-        Event::factory(100)->create();
+        Event::factory(100)
+             ->create()
+             ->each(function ($event) {
+                 foreach (range(0, rand(0, 5)) as $index)
+                 {
+                     $userId = User::inRandomOrder()->first()->id;
+
+                     $event->users()->sync($userId, false);
+                 }
+             });
     }
 }

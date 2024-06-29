@@ -17,13 +17,7 @@ const page = usePage();
         <span class="mdi mdi-view-dashboard"></span>
         <span :class="[showSideBar ? 'pl-3' : 'md:hidden']">Dashboard</span>
     </SideNavLink>
-    <SideNavLink v-if="page.props.auth.user.role < 3"
-                 :href="route('users.index')"
-                 :active="route().current('users.*')">
-        <span class="mdi mdi-account-multiple"></span>
-        <span :class="[showSideBar ? 'pl-3' : 'md:hidden']">Users</span>
-    </SideNavLink>
-    <SideNavLink v-if="page.props.auth.user.role < 2"
+    <SideNavLink v-if="page.props.auth.user.role === 1"
                  :href="route('settings.edit', page.props.settings.id)"
                  :active="route().current('settings.*')">
         <span class="mdi mdi-cog"></span>

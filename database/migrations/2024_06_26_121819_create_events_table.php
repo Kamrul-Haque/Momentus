@@ -17,7 +17,6 @@ return new class extends Migration {
             $table->text('description')->nullable();
             $table->timestamp('start_at');
             $table->timestamp('end_at')->nullable();
-            $table->tinyInteger('status');
             $table->integer('duration')->unsigned()->nullable();
             $table->foreignId('created_by_id')
                   ->nullable()

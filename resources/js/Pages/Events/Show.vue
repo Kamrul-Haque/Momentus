@@ -1,12 +1,22 @@
 <script setup>
 import Auth from "@/Layouts/Auth.vue";
-import {Head, Link} from "@inertiajs/vue3";
+import {Head, Link, router} from "@inertiajs/vue3";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
+import Modal from "@/Components/Modal.vue";
+import DangerButton from "@/Components/DangerButton.vue";
+import {ref} from "vue";
+import DarkButton from "@/Components/DarkButton.vue";
 
 const props = defineProps({
     event: Object
 })
+
+let showConfirmModal = ref(false);
+
+function deleteItem() {
+    router.delete(route('events.delete', props.event.id));
+}
 </script>
 
 <template>
@@ -31,7 +41,7 @@ const props = defineProps({
                         archived
                     </div>
                     <div v-else
-                         :class="[event.status_name === 'upcoming' ? 'bg-blue-50 text-primary' : 'bg-green-100 text-success']"
+                         :class="[event.status_name === 'upcoming' ? 'bg-blue-100 text-primary' : 'bg-green-100 text-success']"
                          class="rounded-full px-4 py-1 text-sm text-center capitalize"
                          title="status">
                         {{ event.status_name }}
@@ -45,22 +55,33 @@ const props = defineProps({
                     <template #trigger>
                         <span class="inline-flex rounded-md">
                             <button type="button"
-                                    class="text-2xl text-gray-600 hover:text-primary focus:outline-none focus:text-primary transition ease-in-out duration-150 disabled:text-gray-400"
-                                    :disabled="event.deleted_at">
+                                    class="text-2xl text-gray-600 hover:text-primary focus:outline-none focus:text-primary transition ease-in-out duration-150">
                                 <i class="mdi mdi-dots-vertical"></i>
                             </button>
                         </span>
                     </template>
 
                     <template #content>
-                        <DropdownLink :href="route('events.edit', event.reminder_id)">
-                            Edit
-                        </DropdownLink>
-                        <DropdownLink :href="route('events.destroy', event.reminder_id)"
-                                      method="DELETE"
-                                      as="button">
-                            Delete
-                        </DropdownLink>
+                        <template v-if="event.deleted_at">
+                            <DropdownLink :href="route('events.restore', event.id)"
+                                          method="PUT"
+                                          as="button">
+                                Restore
+                            </DropdownLink>
+                            <DropdownLink @click="showConfirmModal=true">
+                                Delete
+                            </DropdownLink>
+                        </template>
+                        <template v-else>
+                            <DropdownLink :href="route('events.edit', event.reminder_id)">
+                                Edit
+                            </DropdownLink>
+                            <DropdownLink :href="route('events.destroy', event.reminder_id)"
+                                          method="DELETE"
+                                          as="button">
+                                Archive
+                            </DropdownLink>
+                        </template>
                     </template>
                 </Dropdown>
             </div>
@@ -80,7 +101,7 @@ const props = defineProps({
                                 <i class="mdi mdi-clock"></i>
                                 Start Time:
                             </p>
-                            <p>{{ event.start_at.time }}</p>
+                            <p class="text-gray-700">{{ event.start_at.time }}</p>
                         </div>
                         <div class="grid grid-cols-2"
                              title="start date">
@@ -90,13 +111,41 @@ const props = defineProps({
                             </p>
                             <p class="text-gray-700">{{ event.start_at.date }}</p>
                         </div>
+                        <template v-if="event.end_at">
+                            <div class="grid grid-cols-2"
+                                 title="end time">
+                                <p>
+                                    <i class="mdi mdi-clock-check"></i>
+                                    End Time:
+                                </p>
+                                <p class="text-gray-700">{{ event.end_at.time }}</p>
+                            </div>
+                            <div class="grid grid-cols-2"
+                                 title="end date">
+                                <p>
+                                    <i class="mdi mdi-calendar-check"></i>
+                                    End Date:
+                                </p>
+                                <p class="text-gray-700">{{ event.end_at.date }}</p>
+                            </div>
+                        </template>
+                        <template v-if="event.duration">
+                            <div class="grid grid-cols-2"
+                                 title="duration">
+                                <p>
+                                    <i class="mdi mdi-timer-sand"></i>
+                                    Duration:
+                                </p>
+                                <p class="text-gray-700">{{ event.duration }}</p>
+                            </div>
+                        </template>
                         <div class="grid grid-cols-2"
                              title="created by">
                             <p>
                                 <i class="mdi mdi-account"></i>
                                 Created By:
                             </p>
-                            <div>{{ event.created_by_name }}</div>
+                            <p class="text-gray-700">{{ event.created_by_name }}</p>
                         </div>
                         <div class="grid grid-cols-2"
                              title="attendees">
@@ -104,7 +153,7 @@ const props = defineProps({
                                 <i class="mdi mdi-account-multiple"></i>
                                 Attendees:
                             </p>
-                            <div>{{ event.users.length }} Person</div>
+                            <p class="text-gray-700">{{ event.users.length }} Person</p>
                         </div>
                     </div>
                 </div>
@@ -128,6 +177,28 @@ const props = defineProps({
                 </div>
             </div>
         </div>
+
+        <Modal closeable
+               @close="showConfirmModal=false"
+               max-width="md"
+               :show="showConfirmModal">
+            <div class="card">
+                <div class="card-body">
+                    <div class="flex justify-center">
+                        <div class="block">
+                            <h4 class="heading flex-1">Do you really want to delete this record?</h4>
+                            <div class="text-right mt-8">
+                                <DarkButton @click="showConfirmModal=false"
+                                            class="mr-1">
+                                    Cancel
+                                </DarkButton>
+                                <DangerButton @click.prevent="deleteItem">Confirm</DangerButton>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Modal>
     </Auth>
 </template>
 

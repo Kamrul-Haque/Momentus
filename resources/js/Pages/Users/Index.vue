@@ -1,10 +1,10 @@
 <script setup>
 import DataTable from "@/Components/DataTable.vue";
-import Admin from "@/Layouts/Admin.vue";
 import {Head, Link, router} from "@inertiajs/vue3";
 import Modal from "@/Components/Modal.vue";
 import DangerButton from "@/Components/DangerButton.vue";
 import {ref} from "vue";
+import Auth from "@/Layouts/Auth.vue";
 
 const props = defineProps(['users', 'filters']);
 
@@ -24,7 +24,7 @@ function deleteItem() {
 </script>
 
 <template>
-    <Admin>
+    <Auth>
         <Head title="Users"/>
 
         <DataTable :headers="headers"
@@ -106,5 +106,5 @@ function deleteItem() {
                 </div>
             </div>
         </Modal>
-    </Admin>
+    </Auth>
 </template>
