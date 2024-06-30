@@ -35,7 +35,7 @@ function submit() {
 
     <Auth>
         <div class="card w-full md:w-3/4 mx-auto">
-            <h1 class="card-header">{{ event ? 'Edit User' : 'Create User' }}</h1>
+            <h1 class="card-header">{{ event ? 'Edit Event' : 'Create Event' }}</h1>
             <div class="card-body">
                 <form @submit.prevent="submit()">
                     <TextField v-model="form.title"
